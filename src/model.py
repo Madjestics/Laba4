@@ -5,10 +5,10 @@ from datetime import datetime
 
 
 class Note:
-    def __init__(self, note_id):
+    def __init__(self, note_id, created_time):
         self.note_id = note_id
         self.text = ""
-        self.created_time = datetime.now()
+        self.created_time = created_time
         self.updated_time = self.created_time
 
     def update(self, text, update_at):
