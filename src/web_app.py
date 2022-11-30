@@ -1,9 +1,8 @@
 import datetime
-from typing import List
 
 import fastapi
 
-from model import CreateNote, Note, UpdateNote, GetNoteInfo, DeleteNote, GetNotesList, GetNoteText
+from src.model import CreateNote, Note, UpdateNote, GetNoteInfo, DeleteNote, GetNotesList, GetNoteText
 
 api_router = fastapi.APIRouter()
 
