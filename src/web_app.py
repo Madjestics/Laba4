@@ -41,7 +41,7 @@ def createNote(note_id: int, token:str):
     isToken = isTrueToken(token)
     if (isToken):
         if (note_id not  in listOfId.values()):
-            note = Note(note_id, datetime.datetime.now())
+            note = Note(note_id, datetime.datetime.now(), datetime.datetime.now())
             with open("notes.txt", "a+") as new_file:
                 new_file.write(str(note.note_id) + " " + note.text + " " + str(note.created_time) + " " + str(note.updated_time) + "\n")
             return CreateNote(id=note.note_id)
