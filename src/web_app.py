@@ -12,12 +12,14 @@ index = 0
 
 def readNotes(fileName):
     global listOfNotes, listOfId, index
+    listOfNotes.clear()
     with open(fileName, "r") as file:
         for line in file:
             noteMas = line.split(" ")
+            print(noteMas)
             date_time_obj1 = datetime.datetime.strptime(noteMas[2]+ " " + noteMas[3], '%Y-%m-%d %H:%M:%S.%f')
-            date_time_obj2 = datetime.datetime.strptime(noteMas[4]+ " " + noteMas[5], '%Y-%m-%d %H:%M:%S.%f')
-            note = Note(noteMas[0], date_time_obj1, date_time_obj2)
+            date_time_obj2 = datetime.datetime.strptime(noteMas[4]+ " " + noteMas[5][:len(noteMas[5])-1], '%Y-%m-%d %H:%M:%S.%f')
+            note = Note(int(noteMas[0]), noteMas[1], date_time_obj1, date_time_obj2)
             listOfNotes.append(note)
             if (note.note_id not in listOfId.values()):
                 listOfId[index] = note.note_id
@@ -35,47 +37,52 @@ def isTrueToken(token):
             return True
     return False
 
-@api_router.post("/createNote", response_model=CreateNote)
-def createNote(note_id: int, token:str):
+@api_router.post("/createNote")
+def createNote(note_id: int, text:str, token:str):
     readNotes("notes.txt")
     isToken = isTrueToken(token)
     if (isToken):
         if (note_id not  in listOfId.values()):
-            note = Note(note_id, datetime.datetime.now(), datetime.datetime.now())
+            note = Note(note_id, text, datetime.datetime.now(), datetime.datetime.now())
             with open("notes.txt", "a+") as new_file:
                 new_file.write(str(note.note_id) + " " + note.text + " " + str(note.created_time) + " " + str(note.updated_time) + "\n")
             return CreateNote(id=note.note_id)
-    return CreateNote(id=-1)
+        else:
+            return GetNoteText(id=-1, text="id is already in file")
+    return GetNoteText(id=-1, text="false token")
 
 @api_router.patch("/updateNote", response_model=UpdateNote)
 def updateNote(note_id: int, text:str, token:str):
     readNotes("notes.txt")
     isToken = isTrueToken(token)
-    file = open("notes.txt", "w")
     if (isToken):
         updated_note = None
+        file = open("notes.txt", "w")
+        print(listOfNotes)
         for note in listOfNotes:
             if int(note.note_id) == note_id:
                 note.update(text, datetime.datetime.now())
                 updated_note = note
-            file.write(str(note.note_id) + " " + note.text + " " + str(note.created_time) + " " + str(note.updated_time))
+            file.write(str(note.note_id) + " " + note.text + " " + str(note.created_time) + " " + str(note.updated_time) + "\n")
 
         if (updated_note!=None):
             return UpdateNote(id=updated_note.note_id, text=updated_note.text)
         return UpdateNote(id = -1, text = "id not found")
     return UpdateNote(id=-1, text="false token")
 
-@api_router.get("/getNoteInfo", response_model=GetNoteInfo)
+@api_router.get("/getNoteInfo")
 def getNoteInfo(note_id: int, token:str):
     readNotes("notes.txt")
     isToken = isTrueToken(token)
     if (isToken):
         for note in listOfNotes:
             if int(note.note_id) == note_id:
+                print(note.created_time)
+                print(note.updated_time)
                 return GetNoteInfo(created_at = note.created_time, updated_at = note.updated_time)
-    return GetNoteInfo(created_at = 0, updated_at = 0)
+    return GetNoteText(id=-1, text="false token")
 
-@api_router.delete("/removeNote", response_model=DeleteNote)
+@api_router.delete("/removeNote")
 def removeNote(note_id : int, token:str):
     global  index, listOfId
     readNotes("notes.txt")
@@ -95,17 +102,18 @@ def removeNote(note_id : int, token:str):
                         newList[j] = listOfId[j]
                 listOfId = newList
                 index -= 1
+                break
         for note in listOfNotes:
             file.write(str(note.note_id) + " " + note.text + " " + str(note.created_time) + " " + str(note.updated_time))
         return DeleteNote(removed_id = deleted_note)
-    return DeleteNote(removed_id = -1)
+    return GetNoteText(id=-1, text="false token")
 
-@api_router.get("/getNotesList", response_model=GetNotesList)
+@api_router.get("/getNotesList")
 def getNotesList(token:str):
     readNotes("notes.txt")
     if (isTrueToken(token)):
         return GetNotesList(notes_list = listOfId)
-    return GetNotesList(notes_list ={})
+    return GetNoteText(id=-1, text="false token")
 
 @api_router.get("/getNoteText", response_model=GetNoteText)
 def getNoteText(id: int, token:str):

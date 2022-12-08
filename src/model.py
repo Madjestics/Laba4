@@ -5,9 +5,9 @@ from datetime import datetime
 
 
 class Note:
-    def __init__(self, note_id, created_time, updated_time):
+    def __init__(self, note_id, text, created_time, updated_time):
         self.note_id = note_id
-        self.text = ""
+        self.text = text
         self.created_time = created_time
         self.updated_time = updated_time
 
