@@ -104,7 +104,7 @@ def removeNote(note_id : int, token:str):
                 index -= 1
                 break
         for note in listOfNotes:
-            file.write(str(note.note_id) + " " + note.text + " " + str(note.created_time) + " " + str(note.updated_time))
+            file.write(str(note.note_id) + " " + note.text + " " + str(note.created_time) + " " + str(note.updated_time) + "\n" )
         return DeleteNote(removed_id = deleted_note)
     return GetNoteText(id=-1, text="false token")
 
