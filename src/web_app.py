@@ -38,17 +38,19 @@ def isTrueToken(token):
     return False
 
 @api_router.post("/createNote")
-def createNote(note_id: int, text:str, token:str):
+def createNote(text:str, token:str):
     readNotes("notes.txt")
+    ID = 1
+    if (len(listOfNotes)>1):
+        for i in range(len(listOfId)):
+            if ID in listOfId.values():
+                ID+=1
     isToken = isTrueToken(token)
     if (isToken):
-        if (note_id not  in listOfId.values()):
-            note = Note(note_id, text, datetime.datetime.now(), datetime.datetime.now())
-            with open("notes.txt", "a+") as new_file:
-                new_file.write(str(note.note_id) + " " + note.text + " " + str(note.created_time) + " " + str(note.updated_time) + "\n")
-            return CreateNote(id=note.note_id)
-        else:
-            return GetNoteText(id=-1, text="id is already in file")
+        note = Note(ID, text, datetime.datetime.now(), datetime.datetime.now())
+        with open("notes.txt", "a+") as new_file:
+            new_file.write(str(note.note_id) + " " + note.text + " " + str(note.created_time) + " " + str(note.updated_time) + "\n")
+        return CreateNote(id=note.note_id)
     return GetNoteText(id=-1, text="false token")
 
 @api_router.patch("/updateNote", response_model=UpdateNote)
